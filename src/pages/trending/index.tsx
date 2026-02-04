@@ -41,16 +41,38 @@ type CardItem = {
 const Trending = (props: Props) => {
   const { textColor, navBackgroundColor } = useThemeColor();
 
-  // Use static data directly instead of API call
+  // Start with static data as fallback
   const [data, setData] = useState<Cards[]>(trendvn as any);
 
   const router = useRouter();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set data immediately from static JSON
-    setData(trendvn as any);
+    // Fetch data directly from TikTok API in browser
+    const fetchTrendingData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('https://www.tiktok.com/node/share/discover');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch');
+        }
+        
+        const json = await response.json();
+        
+        if (json?.body && Array.isArray(json.body)) {
+          setData(json.body);
+        }
+      } catch (error) {
+        // Keep using fallback data (trendvn) if fetch fails
+        console.log('Using fallback data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTrendingData();
   }, []);
 
   const trans = useTrans();
