@@ -1,14 +1,11 @@
 export const runtime = 'edge';
 
-import type { NextRequest } from 'next/server';
-
 // Edge Runtime menggunakan Request & Response standar
 export default async function handler(req: Request) {
-  // === 1. Handle CORS ===
   const allowedOrigin = process.env.NEXT_PUBLIC_DOMAIN || '*';
 
+  // === 1. Handle CORS Preflight ===
   if (req.method === 'OPTIONS') {
-    // Preflight request
     return new Response(null, {
       status: 204,
       headers: {
@@ -19,6 +16,7 @@ export default async function handler(req: Request) {
     });
   }
 
+  // === 2. Batasi hanya GET request ===
   if (req.method !== 'GET') {
     return new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
       status: 405,
@@ -30,7 +28,7 @@ export default async function handler(req: Request) {
     });
   }
 
-  // === 2. Fetch data dari TikTok ===
+  // === 3. Fetch data dari TikTok ===
   let data: any = null;
 
   try {
@@ -54,7 +52,7 @@ export default async function handler(req: Request) {
     data = null;
   }
 
-  // === 3. Return response dengan CORS ===
+  // === 4. Return response dengan CORS ===
   return new Response(JSON.stringify({ data }), {
     status: 200,
     headers: {
