@@ -3,15 +3,18 @@ export const runtime = 'edge';
 
 export default async function handler(request: Request) {
   try {
-    // Get region from query params, default to ID (Indonesia)
+    // Get region from query params or Cloudflare header
     const url = new URL(request.url);
-    const region = url.searchParams.get('region') || 'ID';
+    // @ts-ignore - Cloudflare Workers specific property
+    const cfCountry = request.cf?.country || 'ID';
+    const region = url.searchParams.get('region') || cfCountry;
     
     const headers = {
       'Content-Type': 'application/json',
       'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
       'Access-Control-Allow-Origin': '*',
-      'Vary': 'region', // Different cache per region
+      'Vary': 'CF-IPCountry', // Different cache per country
+      'X-Region': region, // Send region back to client
     };
     
     // TikTok API with region parameter
@@ -25,16 +28,16 @@ export default async function handler(request: Request) {
     });
     
     if (!res.ok) {
-      return new Response(JSON.stringify({ data: null }), { status: 200, headers });
+      return new Response(JSON.stringify({ data: null, region }), { status: 200, headers });
     }
     
     const json = await res.json();
-    return new Response(JSON.stringify({ data: json?.body || null }), { status: 200, headers });
+    return new Response(JSON.stringify({ data: json?.body || null, region }), { status: 200, headers });
   } catch (e) {
     const headers = {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
     };
-    return new Response(JSON.stringify({ data: null }), { status: 200, headers });
+    return new Response(JSON.stringify({ data: null, region: 'ID' }), { status: 200, headers });
   }
 }

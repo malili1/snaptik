@@ -43,25 +43,45 @@ const Trending = (props: Props) => {
 
   // Start with static data as fallback
   const [data, setData] = useState<Cards[]>(trendvn as any);
+  const [region, setRegion] = useState<string>('ID');
 
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
+
+  // Map country codes to names
+  const countryNames: Record<string, string> = {
+    'ID': 'Indonesia',
+    'VN': 'Vietnam',
+    'US': 'United States',
+    'SG': 'Singapore',
+    'MY': 'Malaysia',
+    'TH': 'Thailand',
+    'PH': 'Philippines',
+    'BR': 'Brazil',
+    'JP': 'Japan',
+    'KR': 'South Korea',
+    'IN': 'India',
+  };
 
   useEffect(() => {
     // Fetch data from API route (server-side proxy)
     const fetchTrendingData = async () => {
       try {
         setLoading(true);
-        // Get region based on locale: vi -> VN, id -> ID, default -> ID
-        const region = router.locale === 'vi' ? 'VN' : 'ID';
-        const response = await fetch(`/api/trending?region=${region}`);
+        // Don't pass region param - let API auto-detect from user's IP
+        const response = await fetch('/api/trending');
         
         if (!response.ok) {
           throw new Error('Failed to fetch');
         }
         
         const json = await response.json();
+        
+        // Set region from API response
+        if (json?.region) {
+          setRegion(json.region);
+        }
         
         if (json?.data && Array.isArray(json.data)) {
           // Merge with static data if User tab is empty
@@ -83,7 +103,7 @@ const Trending = (props: Props) => {
     };
 
     fetchTrendingData();
-  }, [router.locale]);
+  }, []);
 
   const trans = useTrans();
 
@@ -107,7 +127,7 @@ const Trending = (props: Props) => {
           color={textColor}
           mb="24px"
         >
-          Trending in {router.locale === 'vi' ? 'VN (Vietnam)' : 'ID (Indonesia)'}
+          Trending in {region} ({countryNames[region] || region})
         </Text>
         <Tabs variant="soft-rounded" colorScheme="messenger" isLazy width="100%">
           <TabList>
