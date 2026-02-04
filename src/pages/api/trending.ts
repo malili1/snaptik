@@ -1,23 +1,43 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextRequest } from 'next/server';
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export const runtime = 'edge';
+
+export default async function handler(req: NextRequest) {
   try {
-    const response = await fetch('https://www.tiktok.com/node/share/discover');
+    const response = await fetch('https://www.tiktok.com/node/share/discover', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      },
+    });
     
     if (!response.ok) {
-      return res.status(200).json({ data: null });
+      return new Response(JSON.stringify({ data: null }), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+          'Access-Control-Allow-Origin': '*',
+        },
+      });
     }
     
     const json = await response.json();
     
-    res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    
-    return res.status(200).json({ data: json?.body || null });
+    return new Response(JSON.stringify({ data: json?.body || null }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+        'Access-Control-Allow-Origin': '*',
+      },
+    });
   } catch (error) {
-    return res.status(200).json({ data: null });
+    return new Response(JSON.stringify({ data: null }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
+    });
   }
 }
