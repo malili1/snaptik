@@ -1,41 +1,14 @@
-import dynamic from 'next/dynamic';
 import Layout from '@/components/Layout';
 import { openSans } from '@/contants';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { Box, List, ListItem, Spinner, Text, VStack } from '@chakra-ui/react';
+import { Box, List, ListItem, Spinner, Text, VStack, Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
+import { MusicItem } from '@/components/MusicItem';
+import { HashTagItem } from '@/components/HashTagItem';
+import { UserItem } from '@/components/UserItem';
 import useTrans from '@/hooks/useTrans';
 import { useRouter } from 'next/router';
 import trendvn from '../../../public/trend-vn.json';
-
-// Lazy load Tabs components
-const Tabs = dynamic(() => import('@chakra-ui/react').then(mod => ({ default: mod.Tabs })), {
-  ssr: false,
-  loading: () => <Spinner />,
-});
-const TabList = dynamic(() => import('@chakra-ui/react').then(mod => ({ default: mod.TabList })), {
-  ssr: false,
-});
-const TabPanels = dynamic(() => import('@chakra-ui/react').then(mod => ({ default: mod.TabPanels })), {
-  ssr: false,
-});
-const Tab = dynamic(() => import('@chakra-ui/react').then(mod => ({ default: mod.Tab })), {
-  ssr: false,
-});
-const TabPanel = dynamic(() => import('@chakra-ui/react').then(mod => ({ default: mod.TabPanel })), {
-  ssr: false,
-});
-
-// Lazy load item components
-const MusicItem = dynamic(() => import('@/components/MusicItem').then(mod => ({ default: mod.MusicItem })), {
-  ssr: false,
-});
-const HashTagItem = dynamic(() => import('@/components/HashTagItem').then(mod => ({ default: mod.HashTagItem })), {
-  ssr: false,
-});
-const UserItem = dynamic(() => import('@/components/UserItem').then(mod => ({ default: mod.UserItem })), {
-  ssr: false,
-});
 
 type Props = {};
 
