@@ -1,64 +1,46 @@
-export const runtime = 'edge';
+import type { NextApiRequest, NextApiResponse } from 'next';
+const axios = require('axios');
+import Cors from 'cors';
 
-// Edge Runtime menggunakan Request & Response standar
-export default async function handler(req: Request) {
-  const allowedOrigin = process.env.NEXT_PUBLIC_DOMAIN || '*';
+const cors = Cors({
+  methods: ['GET'],
+  origin: process.env.NEXT_PUBLIC_DOMAIN,
+  optionsSuccessStatus: 200,
+});
 
-  // === 1. Handle CORS Preflight ===
-  if (req.method === 'OPTIONS') {
-    return new Response(null, {
-      status: 204,
-      headers: {
-        'Access-Control-Allow-Origin': allowedOrigin,
-        'Access-Control-Allow-Methods': 'GET,OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
+function runMiddleware(req: NextApiRequest, res: NextApiResponse, fn: Function) {
+  return new Promise((resolve, reject) => {
+    fn(req, res, (result: any) => {
+      if (result instanceof Error) {
+        return reject(result);
+      }
+
+      return resolve(result);
     });
-  }
+  });
+}
 
-  // === 2. Batasi hanya GET request ===
-  if (req.method !== 'GET') {
-    return new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
-      status: 405,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': allowedOrigin,
-        'Access-Control-Allow-Methods': 'GET,OPTIONS',
-      },
-    });
-  }
+export default async function handler(_req: NextApiRequest, res: NextApiResponse<any>) {
+  // Get data from your database
+  await runMiddleware(_req, res, cors);
+  let config = {
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: 'https://www.tiktok.com/node/share/discover',
+  };
 
-  // === 3. Fetch data dari TikTok ===
-  let data: any = null;
+  let data = null;
 
-  try {
-    const response = await fetch('https://www.tiktok.com/node/share/discover', {
-      method: 'GET',
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36',
-        'Accept': 'application/json',
-      },
+  await axios
+    .request(config)
+    .then((response: any) => {
+      data = response.data?.body;
+    })
+    .catch((error: any) => {
+      data = null;
     });
 
-    if (!response.ok) {
-      throw new Error(`TikTok request failed with status ${response.status}`);
-    }
-
-    const json = await response.json();
-    data = json?.body || null;
-  } catch (error) {
-    console.error('Error fetching trending data:', error);
-    data = null;
-  }
-
-  // === 4. Return response dengan CORS ===
-  return new Response(JSON.stringify({ data }), {
-    status: 200,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': allowedOrigin,
-      'Access-Control-Allow-Methods': 'GET,OPTIONS',
-    },
+  res.status(200).json({
+    data,
   });
 }
