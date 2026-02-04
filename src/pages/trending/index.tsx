@@ -107,7 +107,7 @@ const Trending = (props: Props) => {
           color={textColor}
           mb="24px"
         >
-          Trending in {router.locale === 'vi' ? 'VN' : 'ID'}
+          Trending in {router.locale === 'vi' ? 'VN (Vietnam)' : 'ID (Indonesia)'}
         </Text>
         <Tabs variant="soft-rounded" colorScheme="messenger" isLazy width="100%">
           <TabList>
