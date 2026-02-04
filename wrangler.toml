@@ -1,0 +1,7 @@
+[project]
+name = "snaptik"
+compatibility_date = "2026-02-05"
+
+[site]
+bucket = "./out"
+entry-point = "./functions"
