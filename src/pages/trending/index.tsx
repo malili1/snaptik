@@ -49,11 +49,11 @@ const Trending = (props: Props) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch data directly from TikTok API in browser
+    // Fetch data from API route (server-side proxy)
     const fetchTrendingData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('https://www.tiktok.com/node/share/discover');
+        const response = await fetch('/api/trending');
         
         if (!response.ok) {
           throw new Error('Failed to fetch');
@@ -61,8 +61,8 @@ const Trending = (props: Props) => {
         
         const json = await response.json();
         
-        if (json?.body && Array.isArray(json.body)) {
-          setData(json.body);
+        if (json?.data && Array.isArray(json.data)) {
+          setData(json.data);
         }
       } catch (error) {
         // Keep using fallback data (trendvn) if fetch fails
