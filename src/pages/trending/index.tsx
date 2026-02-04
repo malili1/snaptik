@@ -53,7 +53,9 @@ const Trending = (props: Props) => {
     const fetchTrendingData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/trending');
+        // Get region based on locale: vi -> VN, id -> ID, default -> ID
+        const region = router.locale === 'vi' ? 'VN' : 'ID';
+        const response = await fetch(`/api/trending?region=${region}`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch');
@@ -62,7 +64,15 @@ const Trending = (props: Props) => {
         const json = await response.json();
         
         if (json?.data && Array.isArray(json.data)) {
-          setData(json.data);
+          // Merge with static data if User tab is empty
+          const mergedData = json.data.map((item, index) => {
+            // If exploreList is empty, use static data for that index
+            if (!item.exploreList || item.exploreList.length === 0) {
+              return trendvn[index] || item;
+            }
+            return item;
+          });
+          setData(mergedData);
         }
       } catch (error) {
         // Keep using fallback data (trendvn) if fetch fails

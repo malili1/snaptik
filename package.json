@@ -30,8 +30,8 @@
     "zustand": "^4.3.6"
   },
   "devDependencies": {
-    "@svgr/webpack": "^6.5.1",
     "@cloudflare/next-on-pages": "^1.13.5",
+    "@svgr/webpack": "^6.5.1",
     "vercel": "^37.0.0"
   }
 }

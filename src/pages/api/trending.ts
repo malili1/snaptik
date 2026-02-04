@@ -9,8 +9,18 @@ export default async function handler(request: Request) {
   };
 
   try {
-    const res = await fetch('https://www.tiktok.com/node/share/discover', {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
+    // Get region from query params, default to ID (Indonesia)
+    const url = new URL(request.url);
+    const region = url.searchParams.get('region') || 'ID';
+    
+    // TikTok API with region parameter
+    const tiktokUrl = `https://www.tiktok.com/node/share/discover?region=${region}`;
+    
+    const res = await fetch(tiktokUrl, {
+      headers: { 
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Referer': 'https://www.tiktok.com/'
+      },
     });
     
     if (!res.ok) {
