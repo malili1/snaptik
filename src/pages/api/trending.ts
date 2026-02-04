@@ -19,30 +19,29 @@ export default async function handler(req: Request) {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Accept': 'application/json',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Referer': 'https://www.tiktok.com/',
       },
+      signal: AbortSignal.timeout(10000), // 10 second timeout
     });
     
     if (!response.ok) {
-      throw new Error(`TikTok API returned ${response.status}`);
+      return new Response(
+        JSON.stringify({ data: null, error: `API returned ${response.status}` }),
+        { status: 200, headers }
+      );
     }
     
     const json = await response.json();
     return new Response(
       JSON.stringify({ data: json?.body || null }),
-      {
-        status: 200,
-        headers,
-      }
+      { status: 200, headers }
     );
   } catch (error) {
-    console.error('Trending API Error:', error);
-    const errorMessage = typeof error === 'object' && error !== null && 'message' in error ? (error as any).message : 'Failed to fetch';
+    // Return empty data on error instead of throwing
     return new Response(
-      JSON.stringify({ data: null, error: errorMessage }),
-      {
-        status: 200, // Return 200 to avoid breaking the frontend
-        headers,
-      }
+      JSON.stringify({ data: null, error: 'Failed to fetch trending data' }),
+      { status: 200, headers }
     );
   }
 }
