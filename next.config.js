@@ -27,18 +27,6 @@ const nextConfig = {
   },
   reactStrictMode: true,
   trailingSlash: true,
-  compress: true,
-  poweredByHeader: false,
-  
-  // Optimize images
-  images: {
-    domains: ['www.tiktok.com', 'p16-sign-sg.tiktokcdn.com', 'p16.tiktokcdn.com'],
-    formats: ['image/webp'],
-    minimumCacheTTL: 60,
-  },
-  
-  // Enable SWC minification for faster builds
-  swcMinify: true,
 };
 
 module.exports = nextConfig;
