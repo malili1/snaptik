@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  webpack(config, { isServer }) {
+  webpack(config) {
     // Grab the existing rule that handles SVG imports
     const fileLoaderRule = config.module.rules.find((rule) => rule.test?.test?.('.svg'));
 
@@ -23,38 +23,6 @@ const nextConfig = {
     // Modify the file loader rule to ignore *.svg, since we have it handled now.
     fileLoaderRule.exclude = /\.svg$/i;
 
-    // Optimize bundle size
-    if (!isServer) {
-      config.optimization.splitChunks = {
-        chunks: 'all',
-        cacheGroups: {
-          default: false,
-          vendors: false,
-          // Vendor chunk for react and react-dom
-          framework: {
-            name: 'framework',
-            chunks: 'all',
-            test: /(?<!node_modules.*)[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/,
-            priority: 40,
-            enforce: true,
-          },
-          // Chakra UI chunk
-          chakra: {
-            name: 'chakra',
-            test: /[\\/]node_modules[\\/](@chakra-ui|@emotion|framer-motion)[\\/]/,
-            priority: 30,
-            reuseExistingChunk: true,
-          },
-          // Commons chunk for shared code
-          commons: {
-            name: 'commons',
-            minChunks: 2,
-            priority: 20,
-          },
-        },
-      };
-    }
-
     return config;
   },
   reactStrictMode: true,
@@ -71,11 +39,6 @@ const nextConfig = {
   
   // Enable SWC minification for faster builds
   swcMinify: true,
-  
-  // Compiler optimizations
-  compiler: {
-    removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
-  },
 };
 
 module.exports = nextConfig;
