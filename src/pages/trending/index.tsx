@@ -65,7 +65,7 @@ const Trending = (props: Props) => {
         
         if (json?.data && Array.isArray(json.data)) {
           // Merge with static data if User tab is empty
-          const mergedData = json.data.map((item, index) => {
+          const mergedData = json.data.map((item: Cards, index: number) => {
             // If exploreList is empty, use static data for that index
             if (!item.exploreList || item.exploreList.length === 0) {
               return trendvn[index] || item;
@@ -83,7 +83,7 @@ const Trending = (props: Props) => {
     };
 
     fetchTrendingData();
-  }, []);
+  }, [router.locale]);
 
   const trans = useTrans();
 
