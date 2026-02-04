@@ -1,38 +1,17 @@
 export const runtime = 'edge';
 
-export default async function handler(req: Request) {
-  // CORS headers
+export default async function handler() {
   const headers = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
   };
 
-  // Handle preflight
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers });
-  }
-
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
-    
-    const response = await fetch('https://www.tiktok.com/node/share/discover', {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'application/json',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Referer': 'https://www.tiktok.com/',
-      },
-      signal: controller.signal,
-    });
-    
-    clearTimeout(timeoutId);
+    const response = await fetch('https://www.tiktok.com/node/share/discover');
     
     if (!response.ok) {
       return new Response(
-        JSON.stringify({ data: null, error: `API returned ${response.status}` }),
+        JSON.stringify({ data: null }),
         { status: 200, headers }
       );
     }
@@ -43,9 +22,8 @@ export default async function handler(req: Request) {
       { status: 200, headers }
     );
   } catch (error) {
-    // Return empty data on error instead of throwing
     return new Response(
-      JSON.stringify({ data: null, error: 'Failed to fetch trending data' }),
+      JSON.stringify({ data: null }),
       { status: 200, headers }
     );
   }
