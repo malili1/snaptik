@@ -2,7 +2,7 @@ import Layout from '@/components/Layout';
 import { openSans } from '@/contants';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Box, List, ListItem, Spinner, Text, VStack, Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MusicItem } from '@/components/MusicItem';
 import { HashTagItem } from '@/components/HashTagItem';
 import { UserItem } from '@/components/UserItem';
@@ -41,33 +41,17 @@ type CardItem = {
 const Trending = (props: Props) => {
   const { textColor, navBackgroundColor } = useThemeColor();
 
-  const [data, setData] = useState<Cards[]>([]);
+  // Use static data directly instead of API call
+  const [data, setData] = useState<Cards[]>(trendvn as any);
 
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
 
-  const getDataTrending = useCallback(async () => {
-    try {
-      if (router.locale === 'vi') {
-        setData(trendvn as any);
-        return;
-      }
-      setLoading(true);
-      const data = await fetch('/api/trending', {
-        method: 'GET',
-      });
-      const dataJson = await data.json();
-      setLoading(false);
-      setData(dataJson?.data);
-    } catch (_) {
-      setLoading(false);
-    }
-  }, [router.locale]);
-
   useEffect(() => {
-    getDataTrending();
-  }, [getDataTrending]);
+    // Set data immediately from static JSON
+    setData(trendvn as any);
+  }, []);
 
   const trans = useTrans();
 
