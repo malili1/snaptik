@@ -1,9 +1,5 @@
+import dynamic from 'next/dynamic';
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
   Box,
   Heading,
   HStack,
@@ -18,6 +14,23 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import Layout from '@/components/Layout';
 import { openSans } from '@/contants';
 import Board from '@/components/Board';
+
+// Lazy load Accordion components
+const Accordion = dynamic(() => import('@chakra-ui/react').then(mod => ({ default: mod.Accordion })), {
+  ssr: true,
+});
+const AccordionButton = dynamic(() => import('@chakra-ui/react').then(mod => ({ default: mod.AccordionButton })), {
+  ssr: true,
+});
+const AccordionIcon = dynamic(() => import('@chakra-ui/react').then(mod => ({ default: mod.AccordionIcon })), {
+  ssr: true,
+});
+const AccordionItem = dynamic(() => import('@chakra-ui/react').then(mod => ({ default: mod.AccordionItem })), {
+  ssr: true,
+});
+const AccordionPanel = dynamic(() => import('@chakra-ui/react').then(mod => ({ default: mod.AccordionPanel })), {
+  ssr: true,
+});
 
 const features = ['feature1', 'feature2', 'feature3', 'feature4', 'feature5'];
 const steps = ['step1', 'step2', 'step3', 'step4', 'step5', 'step6'];

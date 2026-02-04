@@ -34,6 +34,9 @@ export const REGEX_LINK_DOUYIN =
 export const openSans = Open_Sans({
   subsets: ['latin'],
   weight: '400',
+  display: 'swap',
+  preload: true,
+  fallback: ['system-ui', 'arial'],
 });
 
 export const keywords = [
