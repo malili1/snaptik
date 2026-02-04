@@ -15,6 +15,9 @@ export default async function handler(req: Request) {
   }
 
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    
     const response = await fetch('https://www.tiktok.com/node/share/discover', {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -22,8 +25,10 @@ export default async function handler(req: Request) {
         'Accept-Language': 'en-US,en;q=0.9',
         'Referer': 'https://www.tiktok.com/',
       },
-      signal: AbortSignal.timeout(10000), // 10 second timeout
+      signal: controller.signal,
     });
+    
+    clearTimeout(timeoutId);
     
     if (!response.ok) {
       return new Response(
