@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import type { NextApiRequest, NextApiResponse } from 'next';
 const axios = require('axios');
 import Cors from 'cors';
